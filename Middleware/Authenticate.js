@@ -5,21 +5,19 @@ dotenv.config()
 const authenticate=async(req,res,next)=>{
     const token = req.headers.authorization
     const decode = jwt.verify(token,process.env.jwtkey)
-    console.log(decode)
-    let user = await User.findOne({_id:decode._id})
-    console.log('user',user)
-    try{
-        if(decode){
-            next()
-           }
-           else
-           {
-            res.send({"message":"You are not Authorized"})
-           }
-    }catch(err){
-        console.log(err)
-        res.send({message:"You are not Authorized"})
+   if(!token){
+    res.send({message:"You are unauthorized"})
+   }
+  try {
+    let user = await User.findOne({ _id: decode._id });
+    if (user.token !== token) {
+      return res.status(401).send({ message: "Unauthorized" });
     }
+    const verification = jwt.verify(token,'masai');
+    next();
+  } catch (e) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
    
 }
 

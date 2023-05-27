@@ -1,13 +1,13 @@
 
 const jwt = require("jsonwebtoken");
 const User = require('../../Models/User')
-
-
-
-
+const dotenv = require('dotenv')
+dotenv.config()
 const account = async(req,res)=>{
    let  token = req.headers.authorization
-   let decode = jwt.verify(token,'masai')
+
+   let decode = jwt.decode(token,process.env.jwtkey)
+   
    try{
     let user = await User.findOne(
         {_id:decode._id}   

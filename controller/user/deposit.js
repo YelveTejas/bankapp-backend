@@ -5,12 +5,13 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 const deposits = async(req,res)=>{
-let token = req.header.authorization
-const {amount,type} = req.body
-let decode = jwt.verify(token,process.env.jwtkey)
+let token = req.headers.authorization
+let {amount,type} = req.body
 
+let decode = jwt.decode(token,process.env.jwtkey)
+   
 
-amount = Number(amount)
+ amount = Number(amount)
 if(type!=='deposit'){
     return res.status({message:"Wrong Api"})
 }
@@ -20,7 +21,7 @@ let user = await User.findOne({_id:decode._id})
 let bal = user.balance+amount
 let deposit = await Account.create({
     userId:user._id,
-    type,
+    transactionType:type,
     balance:bal,
     amount,
 
